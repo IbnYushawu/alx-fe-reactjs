@@ -1,6 +1,5 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import UserContext from "./UserContext";
-import UserDetails from "../UserDetails";
 
 function UserProfile() {
   const userData = useContext(UserContext);
@@ -8,7 +7,8 @@ function UserProfile() {
   return (
     <div>
       <h2>User Profile</h2>
-      <UserDetails user={user} />
+      <p>Name: {userData.name}</p>
+      <p>Email: {userData.email}</p>
     </div>
   );
 }
