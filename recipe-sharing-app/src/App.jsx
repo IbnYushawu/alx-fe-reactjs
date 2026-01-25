@@ -1,11 +1,12 @@
-import { Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AddRecipeForm from './components/AddRecipeForm';
 import RecipeList from './components/RecipeList';
 import RecipeDetails from './components/RecipeDetails';
+import SearchBar from './components/SearchBar';
 
 const App = () => {
   return (
-    <div>
+    <Router>
       <h1>Recipe Sharing App</h1>
 
       <Routes>
@@ -13,6 +14,7 @@ const App = () => {
           path="/"
           element={
             <>
+              <SearchBar />
               <AddRecipeForm />
               <RecipeList />
             </>
@@ -20,7 +22,7 @@ const App = () => {
         />
         <Route path="/recipes/:id" element={<RecipeDetails />} />
       </Routes>
-    </div>
+    </Router>
   );
 };
 
