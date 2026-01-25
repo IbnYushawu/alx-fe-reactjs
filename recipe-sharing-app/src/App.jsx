@@ -6,7 +6,7 @@ import SearchBar from './components/SearchBar';
 
 const App = () => {
   return (
-    <Router>
+    <div>
       <h1>Recipe Sharing App</h1>
 
       <Routes>
@@ -22,7 +22,7 @@ const App = () => {
         />
         <Route path="/recipes/:id" element={<RecipeDetails />} />
       </Routes>
-    </Router>
+    </div>
   );
 };
 
