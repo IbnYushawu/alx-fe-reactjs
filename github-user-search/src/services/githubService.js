@@ -1,4 +1,3 @@
-
 import axios from "axios";
 
 const githubApi = axios.create({
@@ -10,7 +9,27 @@ const githubApi = axios.create({
   },
 });
 
-export const fetchUserData = async (username) => {
-  const response = await githubApi.get(`/users/${username}`);
-  return response.data;
+export const fetchAdvancedUsers = async ({
+  query,
+  location,
+  repos,
+  page = 1,
+}) => {
+  let searchQuery = query;
+
+  if (location) searchQuery += ` location:${location}`;
+  if (repos) searchQuery += ` repos:>=${repos}`;
+
+  const response = await githubApi.get(
+    `/search/users?q=${encodeURIComponent(searchQuery)}&page=${page}&per_page=10`
+  );
+
+  const detailedUsers = await Promise.all(
+    response.data.items.map(async (user) => {
+      const detail = await githubApi.get(`/users/${user.login}`);
+      return detail.data;
+    })
+  );
+
+  return detailedUsers;
 };

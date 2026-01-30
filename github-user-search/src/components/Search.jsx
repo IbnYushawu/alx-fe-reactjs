@@ -1,25 +1,32 @@
 import { useState } from "react";
-import { fetchUserData } from "../services/githubService";
+import { fetchAdvancedUsers } from "../services/githubService";
 
 const Search = () => {
-  const [username, setUsername] = useState("");
-  const [user, setUser] = useState(null);
+  const [query, setQuery] = useState("");
+  const [location, setLocation] = useState("");
+  const [repos, setRepos] = useState("");
+  const [users, setUsers] = useState([]);
+  const [page, setPage] = useState(1);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSearch = async (e, newPage = 1) => {
     e.preventDefault();
-
-    if (!username) return;
-
     setLoading(true);
     setError("");
-    setUser(null);
 
     try {
-      const data = await fetchUserData(username);
-      setUser(data);
-    } catch (err) {
+      const data = await fetchAdvancedUsers({
+        query,
+        location,
+        repos,
+        page: newPage,
+      });
+
+      setUsers(newPage === 1 ? data : [...users, ...data]);
+      setPage(newPage);
+    } catch {
       setError("Looks like we cant find the user");
     } finally {
       setLoading(false);
@@ -27,33 +34,76 @@ const Search = () => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <div className="max-w-4xl mx-auto p-4">
+      <form
+        onSubmit={(e) => handleSearch(e, 1)}
+        className="grid gap-4 md:grid-cols-4 bg-white p-4 rounded shadow"
+      >
         <input
-          type="text"
-          placeholder="Enter GitHub username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          className="border p-2 rounded"
+          placeholder="Username"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
         />
-        <button type="submit">Search</button>
+
+        <input
+          className="border p-2 rounded"
+          placeholder="Location"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+        />
+
+        <input
+          className="border p-2 rounded"
+          type="number"
+          placeholder="Min repos"
+          value={repos}
+          onChange={(e) => setRepos(e.target.value)}
+        />
+
+        <button className="bg-black text-white rounded">
+          Search
+        </button>
       </form>
 
-      {/* Conditional Rendering */}
-      {loading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
+      {loading && <p className="mt-4">Loading...</p>}
+      {error && <p className="mt-4 text-red-500">{error}</p>}
 
-      {user && (
-        <div>
-          <img
-            src={user.avatar_url}
-            alt={user.login}
-            width="100"
-          />
-          <h3>{user.name || user.login}</h3>
-          <a href={user.html_url} target="_blank" rel="noreferrer">
-            View GitHub Profile
-          </a>
-        </div>
+      <div className="grid gap-4 mt-6 sm:grid-cols-2">
+        {users.map((user) => (
+          <div
+            key={user.id}
+            className="border p-4 rounded flex gap-4"
+          >
+            <img
+              src={user.avatar_url}
+              alt={user.login}
+              className="w-16 h-16 rounded-full"
+            />
+            <div>
+              <h3 className="font-semibold">{user.login}</h3>
+              <p>Location: {user.location ?? "N/A"}</p>
+              <p>Repos: {user.public_repos}</p>
+              <a
+                href={user.html_url}
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-500"
+              >
+                View Profile
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {users.length > 0 && (
+        <button
+          onClick={(e) => handleSearch(e, page + 1)}
+          className="mt-6 mx-auto block bg-gray-200 px-4 py-2 rounded"
+        >
+          Load More
+        </button>
       )}
     </div>
   );
