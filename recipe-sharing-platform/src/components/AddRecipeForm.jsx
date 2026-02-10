@@ -6,7 +6,7 @@ function AddRecipeForm() {
   const navigate = useNavigate()
   const [title, setTitle] = useState("")
   const [ingredients, setIngredients] = useState("")
-  const [instructions, setInstructions] = useState("")
+  const [steps, setSteps] = useState("")
   const [errors, setErrors] = useState({})
 
   const handleSubmit = (e) => {
@@ -18,7 +18,7 @@ function AddRecipeForm() {
     if (!ingredients.trim()) newErrors.ingredients = "Ingredients are required."
     if (ingredients.split("\n").length < 2)
       newErrors.ingredients = "Please include at least 2 ingredients."
-    if (!instructions.trim()) newErrors.instructions = "Instructions are required."
+    if (!steps.trim()) newErrors.steps = "Steps are required."
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
@@ -32,7 +32,7 @@ function AddRecipeForm() {
       summary: ingredients.split("\n")[0] || "",
       image: "https://via.placeholder.com/300x200",
       ingredients: ingredients.split("\n"),
-      instructions: instructions.split("\n"),
+      steps: steps.split("\n"), // renamed from instructions
     }
 
     // For now, push to local array (replace with backend API later)
@@ -41,7 +41,7 @@ function AddRecipeForm() {
     // Reset form
     setTitle("")
     setIngredients("")
-    setInstructions("")
+    setSteps("")
     setErrors({})
 
     // Redirect to home page
@@ -88,22 +88,20 @@ function AddRecipeForm() {
           )}
         </div>
 
-        {/* Instructions */}
+        {/* Steps */}
         <div className="mb-4">
           <label className="block text-gray-700 font-medium mb-2">
             Preparation Steps (one per line)
           </label>
           <textarea
             className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.instructions ? "border-red-500" : "border-gray-300"
+              errors.steps ? "border-red-500" : "border-gray-300"
             }`}
             rows={5}
-            value={instructions}
-            onChange={(e) => setInstructions(e.target.value)}
+            value={steps}
+            onChange={(e) => setSteps(e.target.value)}
           />
-          {errors.instructions && (
-            <p className="text-red-500 text-sm mt-1">{errors.instructions}</p>
-          )}
+          {errors.steps && <p className="text-red-500 text-sm mt-1">{errors.steps}</p>}
         </div>
 
         {/* Submit Button */}
