@@ -9,42 +9,44 @@ function AddRecipeForm() {
   const [steps, setSteps] = useState("")
   const [errors, setErrors] = useState({})
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-
-    // Validation
+  const validate = () => {
     const newErrors = {}
+
     if (!title.trim()) newErrors.title = "Title is required."
     if (!ingredients.trim()) newErrors.ingredients = "Ingredients are required."
     if (ingredients.split("\n").length < 2)
       newErrors.ingredients = "Please include at least 2 ingredients."
     if (!steps.trim()) newErrors.steps = "Steps are required."
 
+    return newErrors
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    const newErrors = validate() // Call validate function
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
       return
     }
 
-    // Create new recipe object
     const newRecipe = {
       id: recipesData.length + 1,
       title,
       summary: ingredients.split("\n")[0] || "",
       image: "https://via.placeholder.com/300x200",
       ingredients: ingredients.split("\n"),
-      steps: steps.split("\n"), // renamed from instructions
+      steps: steps.split("\n"),
     }
 
-    // For now, push to local array (replace with backend API later)
     recipesData.push(newRecipe)
 
-    // Reset form
     setTitle("")
     setIngredients("")
     setSteps("")
     setErrors({})
 
-    // Redirect to home page
     navigate("/")
   }
 
